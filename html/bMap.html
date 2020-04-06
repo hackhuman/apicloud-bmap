@@ -1,0 +1,274 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+        label {
+            margin: 10px;
+            font-size: 24px;
+        }
+
+        ul {
+            margin-bottom: 10px;
+        }
+
+        ul li {
+            margin: 5px 10px;
+            padding: 5px;
+            color: #000;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+
+<body>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    var temperatureWarningLevel = 21;
+    var liquidLvlWarningLevel = 20;
+    var bmap
+    var pointsID_global //重复执行的函数setInterval，被重复的函数无法携带参数的问题无法解决，因此在这里定义一个全局变量，
+    //并重新定义了一个不需要参数的函数来实现重复执行
+    apiready = function() {
+        //监听菜单选项点击事件
+        api.addEventListener({
+            name: 'changeSensor'
+        }, function(ret, err) {
+            if (ret) {
+                pointsID_global = ret.value.sensor
+                getPoints(pointsID_global);
+                setInterval(getPoints_refresh,5000);
+            } else {
+                alert(JSON.stringify(err));
+            }
+        });
+        //创建并显示百度地图实例
+        bmap = api.require("bMap");
+        bmap.open({
+            rect: {
+                x: 0,
+                y: 0,
+            },
+            center: {
+                lon: 115.7920831300,
+                lat: 32.8981827200
+            },
+            zoomLevel: 13,
+            showUserLocation: true,
+            fixedOn: api.frameName,
+            fixed: true
+        }, function(ret) {
+
+        });
+
+
+
+    };
+
+    //获取设备经纬度并设置标注信息
+    function getPoints(pointsID) {
+        api.ajax({
+            url: 'http://129.226.112.43/get.php',
+            method: 'get',
+        }, function(ret, err) {
+            if (ret) {
+                //设置温度图标信息
+                if (pointsID == 0) {
+                    bmap.removeAnnotations();
+                    for (i = 0; i < ret.length; i++) {
+                        //此处对获取的温度值进行是否警报判断
+                        var warning = ret[i][3];
+                        if (warning >= temperatureWarningLevel) {
+                            bmap.addAnnotations({
+                                annotations: [{
+                                    id: i,
+                                    lon: ret[i][1],
+                                    lat: ret[i][0]
+                                }],
+                                icon: '../image/red96.png',
+                                draggable: true,
+                            }, function(ret) {
+
+                            });
+                        } else if (warning < temperatureWarningLevel) {
+                            bmap.addAnnotations({
+                                annotations: [{
+                                    id: i,
+                                    lon: ret[i][1],
+                                    lat: ret[i][0]
+                                }],
+                                icon: '../image/green96.png',
+                                draggable: true,
+                            }, function(ret) {
+
+                            });
+                        }
+                        setTemperatureInfo(i, ret[i][3]);
+                    }
+                }
+                //设置液位图标信息
+                else if (pointsID == 1) {
+                    bmap.removeAnnotations();
+                    for (i = 0; i < ret.length; i++) {
+                        var warning = ret[i][2];
+                        if (warning >= liquidLvlWarningLevel) {
+                            bmap.addAnnotations({
+                                annotations: [{
+                                    id: i,
+                                    lon: ret[i][1],
+                                    lat: ret[i][0]
+                                }],
+                                icon: '../image/red96.png',
+                                draggable: true,
+                            }, function(ret) {
+
+                            });
+                        } else if (warning < liquidLvlWarningLevel) {
+                            bmap.addAnnotations({
+                                annotations: [{
+                                    id: i,
+                                    lon: ret[i][1],
+                                    lat: ret[i][0]
+                                }],
+                                icon: '../image/green96.png',
+                                draggable: true,
+                            }, function(ret) {
+
+                            });
+                        }
+                        setLiquidlvlInfo(i, ret[i][2]);
+                    }
+                }
+            } else {
+                alert(JSON.stringify(err));
+            }
+        });
+    };
+    //重复执行辅助函数
+    function getPoints_refresh() {
+        api.ajax({
+            url: 'http://129.226.112.43/get.php',
+            method: 'get',
+        }, function(ret, err) {
+            if (ret) {
+                //设置温度图标信息
+                if (pointsID_global == 0) {
+                    bmap.removeAnnotations();
+                    for (i = 0; i < ret.length; i++) {
+                        //此处对获取的温度值进行是否警报判断
+                        var warning = ret[i][3];
+                        if (warning >= temperatureWarningLevel) {
+                            bmap.addAnnotations({
+                                annotations: [{
+                                    id: i,
+                                    lon: ret[i][1],
+                                    lat: ret[i][0]
+                                }],
+                                icon: '../image/red96.png',
+                                draggable: true,
+                            }, function(ret) {
+
+                            });
+                        } else if (warning < temperatureWarningLevel) {
+                            bmap.addAnnotations({
+                                annotations: [{
+                                    id: i,
+                                    lon: ret[i][1],
+                                    lat: ret[i][0]
+                                }],
+                                icon: '../image/green96.png',
+                                draggable: true,
+                            }, function(ret) {
+
+                            });
+                        }
+                        setTemperatureInfo(i, ret[i][3]);
+                    }
+                }
+                //设置液位图标信息
+                else if (pointsID_global == 1) {
+                    bmap.removeAnnotations();
+                    for (i = 0; i < ret.length; i++) {
+                        var warning = ret[i][2];
+                        if (warning >= liquidLvlWarningLevel) {
+                            bmap.addAnnotations({
+                                annotations: [{
+                                    id: i,
+                                    lon: ret[i][1],
+                                    lat: ret[i][0]
+                                }],
+                                icon: '../image/red96.png',
+                                draggable: true,
+                            }, function(ret) {
+
+                            });
+                        } else if (warning < liquidLvlWarningLevel) {
+                            bmap.addAnnotations({
+                                annotations: [{
+                                    id: i,
+                                    lon: ret[i][1],
+                                    lat: ret[i][0]
+                                }],
+                                icon: '../image/green96.png',
+                                draggable: true,
+                            }, function(ret) {
+
+                            });
+                        }
+                        setLiquidlvlInfo(i, ret[i][2]);
+                    }
+                }
+            } else {
+                alert(JSON.stringify(err));
+            }
+        });
+    };
+    //显示地图标注信息
+    function setTemperatureInfo(_id, data) {
+        bmap.setBubble({
+            id: _id,
+            bgImg: 'widget://res/bubble_bg.png',
+            content: {
+                title: data + "℃",
+                illus: 'http://ico.ooopic.com/ajax/iconpng/?id=145044.png'
+            },
+            styles: {
+                titleColor: '#000',
+                titleSize: 16,
+                subTitleColor: '#999',
+                subTitleSize: 12,
+                illusAlign: 'left'
+            }
+        }, function(ret) {
+
+        });
+    }
+
+    function setLiquidlvlInfo(_id, data) {
+        bmap.setBubble({
+            id: _id,
+            bgImg: 'widget://res/bubble_bg.png',
+            content: {
+                title: data + "cm",
+                illus: 'http://ico.ooopic.com/ajax/iconpng/?id=145044.png'
+            },
+            styles: {
+                titleColor: '#000',
+                titleSize: 16,
+                subTitleColor: '#999',
+                subTitleSize: 12,
+                illusAlign: 'left'
+            }
+        }, function(ret) {
+
+        });
+    }
+</script>
+
+</html>

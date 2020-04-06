@@ -1,71 +1,125 @@
 <!DOCTYPE HTML>
 <html>
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
     <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
-    <title>Hello APP</title>
     <link rel="stylesheet" type="text/css" href="../css/api.css" />
     <style>
-        label {
-            margin: 10px;
-            font-size: 24px;
+        header {
+            position: relative;
+            width: 100%;
+            height: 50px;
         }
 
-        ul {
-            margin-bottom: 10px;
+        header .left {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100px;
+            height: 50px;
+            background: url(../image/menu.jpg);
+            background-size: 40px 40px;
+            background-repeat: no-repeat;
+            background-position: left;
         }
 
-        ul li {
-            margin: 5px 10px;
-            padding: 5px;
-            color: #000;
-            word-wrap: break-word;
+        header .right {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 40px;
+            height: 50px;
+            background: url(../image/gerenzhongxin.jpeg);
+            background-size: 40px 40px;
+            background-repeat: no-repeat;
+            background-position: left;
         }
     </style>
 </head>
 
 <body>
-    <label>Hello APP</label>
-    <div id='sys-info'></div>
+    <header id="header">
+        <div class="left" tapmode onclick="openMenu()">
+        </div>
+        <div class="right" tapmode onclick="openPerson()">
+        </div>
+    </header>
 </body>
 <script type="text/javascript" src="../script/api.js"></script>
 <script type="text/javascript">
+    var sideMenu
     apiready = function() {
-        var ver = api.version;
-        var sType = api.systemType;
-        var sVer = api.systemVersion;
-        var id = api.deviceId;
-        var model = api.deviceModel;
-        var name = api.deviceName;
-        var cType = api.connectionType;
-        var winName = api.winName;
-        var winWidth = api.winWidth;
-        var winHeight = api.winHeight;
-        var frameName = api.frameName || '';
-        var frameWidth = api.frameWidth || '';
-        var frameHeight = api.frameHeight || '';
+        // 修复导航栏沉浸模式
+        var header = $api.byId('header');
+        $api.fixStatusBar(header)
+        // 获取导航栏高度
+        var headerH = $api.offset(header).h;
 
-        var str = '<ul>';
-        str += '<li>引擎版本信息: ' + ver + '</li>';
-        str += '<li>系统类型: ' + sType + '</li>';
-        str += '<li>系统版本: ' + sVer + '</li>';
-        str += '<li>设备标识: ' + id + '</li>';
-        str += '<li>设备型号: ' + model + '</li>';
-        str += '<li>设备名称: ' + name + '</li>';
-        str += '<li>网络状态: ' + cType + '</li>';
-        str += '<li>主窗口名字: ' + winName + '</li>';
-        str += '<li>主窗口宽度: ' + winWidth + '</li>';
-        str += '<li>主窗口高度: ' + winHeight + '</li>';
-        str += '<li>子窗口名字: ' + frameName + '</li>';
-        str += '<li>子窗口宽度: ' + frameWidth + '</li>';
-        str += '<li>子窗口高度: ' + frameHeight + '</li>';
-        str += '</ul>';
-
-        $api.byId('sys-info').innerHTML = str;
-
+        sideMenu = api.require("sideMenu");
+        api.openFrame({
+            name: 'bMap',
+            url: './bMap.html',
+            rect: {
+                x: 0,
+                y: headerH,
+                w: 'auto',
+                h: 'auto'
+            },
+            pageParam: {
+                name: 'test'
+            },
+            bounces: false,
+            bgColor: 'rgba(0,0,0,0)',
+            vScrollBarEnabled: true,
+            hScrollBarEnabled: true
+        });
     };
+
+    function openMenu() {
+        var headerH = $api.offset(header).h;
+        sideMenu.open({
+            trajectoryColor: '#3F9FEA',
+            startPosition: headerH,
+            btnArray: [{
+                title: 'wendu',
+                'icon': 'widget://image/test.jpg',
+                'bgImg': 'widget://image/wendu.png'
+            }, {
+                title: 'yewei',
+                'icon': 'widget://image/test.jpg',
+                'bgImg': 'widget://image/yewei.png'
+            }],
+            fixedOn: api.frameName
+        }, function(ret, err) {
+            if (ret) {
+                //alert(JSON.stringify(ret));
+                index = ret.index;
+                changeSensor(index);
+            } else {
+                alert(JSON.stringify(err));
+            }
+        });
+    }
+    function changeSensor(index) {
+      api.sendEvent({
+          name: 'changeSensor',
+          extra: {
+          sensor : index
+          }
+      });
+
+    }
+
+    function openPerson() {
+
+    }
+
+    function fnShow() {
+
+    }
+
+
 </script>
 
 </html>
