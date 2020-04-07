@@ -48,7 +48,7 @@
 </body>
 <script type="text/javascript" src="../script/api.js"></script>
 <script type="text/javascript">
-    var sideMenu
+    var menu
     apiready = function() {
         // 修复导航栏沉浸模式
         var header = $api.byId('header');
@@ -56,7 +56,7 @@
         // 获取导航栏高度
         var headerH = $api.offset(header).h;
 
-        sideMenu = api.require("sideMenu");
+        menu = api.require("sideMenu");
         api.openFrame({
             name: 'bMap',
             url: './bMap.html',
@@ -79,7 +79,7 @@
     function openMenu() {
         alert("点击");
         var headerH = $api.offset(header).h;
-        sideMenu.open({
+        menu.open({
             trajectoryColor: '#3F9FEA',
             startPosition: headerH,
             btnArray: [{
