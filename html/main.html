@@ -56,7 +56,7 @@
         // 获取导航栏高度
         var headerH = $api.offset(header).h;
 
-        menu = api.require("sideMenu");
+        sideMenu = api.require("sideMenu");
         api.openFrame({
             name: 'bMap',
             url: './bMap.html',
@@ -79,16 +79,16 @@
     function openMenu() {
         alert("点击");
         var headerH = $api.offset(header).h;
-        menu.open({
+        sideMenu.open({
             trajectoryColor: '#3F9FEA',
             startPosition: headerH,
             btnArray: [{
                 title: 'wendu',
-                'icon': 'widget://image/test.jpg',
+                'icon': 'widget://image/wendu.png',
                 'bgImg': 'widget://image/wendu.png'
             }, {
                 title: 'yewei',
-                'icon': 'widget://image/test.jpg',
+                'icon': 'widget://image/yewei.png',
                 'bgImg': 'widget://image/yewei.png'
             }],
             fixedOn: api.frameName

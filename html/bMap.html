@@ -32,8 +32,8 @@
 <script type="text/javascript">
     var temperatureWarningLevel = 21;
     var liquidLvlWarningLevel = 20;
-    var bmap
-    var pointsID_global //重复执行的函数setInterval，被重复的函数无法携带参数的问题无法解决，因此在这里定义一个全局变量，
+    var bmap;
+    var pointsID_global; //重复执行的函数setInterval，被重复的函数无法携带参数的问题无法解决，因此在这里定义一个全局变量，
     //并重新定义了一个不需要参数的函数来实现重复执行
     apiready = function() {
         //监听菜单选项点击事件
@@ -41,7 +41,7 @@
             name: 'changeSensor'
         }, function(ret, err) {
             if (ret) {
-                pointsID_global = ret.value.sensor
+                pointsID_global = ret.value.sensor;
                 getPoints(pointsID_global);
                 setInterval(getPoints_refresh,10000);
             } else {
