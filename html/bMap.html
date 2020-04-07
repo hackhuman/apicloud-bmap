@@ -43,7 +43,7 @@
             if (ret) {
                 pointsID_global = ret.value.sensor;
                 getPoints(pointsID_global);
-                setInterval(getPoints_refresh,10000);
+                setInterval(getPoints_refresh,60000);
             } else {
                 alert(JSON.stringify(err));
             }
